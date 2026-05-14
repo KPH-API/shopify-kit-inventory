@@ -243,7 +243,11 @@ export default async function handler(req, res) {
 
   console.error(err);
 
-  return res.status(500).send(err.message || "Unknown error");
+  return res.status(500).send(
+  err.response?.data
+    ? JSON.stringify(err.response.data)
+    : err.message || "Unknown error"
+  );
   }
 }
 
