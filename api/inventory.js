@@ -291,25 +291,6 @@ async function adjustInventory(
     }
   `;
 
-async function adjustInventory(
-  inventoryItemId,
-  locationId,
-  delta
-) {
-
-  const mutation = `
-    mutation inventoryAdjustQuantities(
-      $input: InventoryAdjustQuantitiesInput!
-    ) {
-      inventoryAdjustQuantities(input: $input) {
-        userErrors {
-          field
-          message
-        }
-      }
-    }
-  `;
-
   const response = await shopify(mutation, {
     input: {
       reason: "correction",
