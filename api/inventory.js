@@ -14,7 +14,7 @@ const TOKEN = process.env.SHOPIFY_TOKEN;
   // git commit -m "update kits"
   // git push
 
-const kits = {
+const kit = {
   "C-D-7-2": [
     { sku: "C-B-5-11", qty: 24 },
     { sku: "C-B-6-9", qty: 18 },
