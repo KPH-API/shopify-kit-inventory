@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const SHOP = process.env.SHOPIFY_SHOP;
-const TOKEN = process.env.SHOPIFY_TOKEN;
+const CLIENT_ID = process.env.SHOPIFY_CLIENT_ID;
+const CLIENT_SECRET = process.env.SHOPIFY_CLIENT_SECRET;
 
   // Voorbeeld
   // "A-A-1": [
@@ -315,7 +316,22 @@ async function adjustInventory(
   }
 }
 
+async function getAccessToken() {
+
+  const response = await axios.post(
+    `https://${SHOP}/admin/oauth/access_token`,
+    {
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET
+    }
+  );
+
+  return response.data.access_token;
+}
+
 async function shopify(query, variables = {}) {
+
+  const accessToken = await getAccessToken();
 
   return axios.post(
     `https://${SHOP}/admin/api/2025-01/graphql.json`,
@@ -325,7 +341,7 @@ async function shopify(query, variables = {}) {
     },
     {
       headers: {
-        "X-Shopify-Access-Token": TOKEN,
+        "X-Shopify-Access-Token": accessToken,
         "Content-Type": "application/json"
       }
     }
