@@ -216,7 +216,7 @@ export default async function handler(req, res) {
       return res.status(200).send("No increase");
     }
 
-    const components = kits[sku];
+    const components = kit[sku];
 
     if (!components) {
       return res.status(200).send("No kit config");
@@ -240,9 +240,9 @@ export default async function handler(req, res) {
 
   } catch (err) {
 
-    console.error(err);
+  console.error(err);
 
-    return res.status(500).send("Error");
+  return res.status(500).send(err.message || "Unknown error");
   }
 }
 
@@ -291,7 +291,26 @@ async function adjustInventory(
     }
   `;
 
-  await shopify(mutation, {
+async function adjustInventory(
+  inventoryItemId,
+  locationId,
+  delta
+) {
+
+  const mutation = `
+    mutation inventoryAdjustQuantities(
+      $input: InventoryAdjustQuantitiesInput!
+    ) {
+      inventoryAdjustQuantities(input: $input) {
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+  `;
+
+  const response = await shopify(mutation, {
     input: {
       reason: "correction",
       name: "available",
@@ -304,6 +323,15 @@ async function adjustInventory(
       ]
     }
   });
+
+  const errors =
+    response.data.data.inventoryAdjustQuantities.userErrors;
+
+  if (errors.length) {
+    throw new Error(
+      errors.map(e => e.message).join(", ")
+    );
+  }
 }
 
 async function shopify(query, variables = {}) {
